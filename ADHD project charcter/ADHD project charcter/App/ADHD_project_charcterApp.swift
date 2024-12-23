@@ -32,8 +32,8 @@ import SwiftUI
 struct ADHD_project_charcterApp: App {
     var body: some Scene {
         WindowGroup {
-//            LoginView(appUser: .constant(nil))  // Start with LoginView
-            ADHDTabView()
+            LoginView(appUser: .constant(nil))  // Start with LoginView
+//            ADHDTabView()
         }
     }
 }

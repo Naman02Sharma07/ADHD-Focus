@@ -32,22 +32,6 @@ struct TaskRow: View {
     }
 }
 
-//#Preview {
-//    TaskRow(task: Tasks(title: "Sample Task"))
-//}
-
-
-
-
-//struct TaskRow_Previews: PreviewProvider {
-//    @State static var selectedTask: Tasks? = nil // Temporary state for preview
-//
-//    static var previews: some View {
-//        TaskRow(task: Tasks(title: "Sample Task"), selectedTask: $selectedTask)
-//            .previewLayout(.sizeThatFits)
-//            .padding()
-//    }
-//}
 
 
 struct TaskRow_Previews: PreviewProvider {

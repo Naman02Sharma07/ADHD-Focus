@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ProfileView: View {
+    
+    @Environment(\.dismiss) var dismiss // To dismiss the current view
+    @State private var appUser: AppUser? // Assume this is passed or set somehow
     var body: some View {
         NavigationView {
             VStack {
@@ -29,16 +32,16 @@ struct ProfileView: View {
                 Form {
                     Section {
                         HStack {
-                            Text("First Name")
+                            Text(" Email")
                             Spacer()
                             Text("Danny")
                                 .foregroundColor(.gray)
                         }
 
                         HStack {
-                            Text("Last Name")
+                            Text("password")
                             Spacer()
-                            Text("Rico")
+                            Text("******")
                                 .foregroundColor(.gray)
                         }
 
@@ -49,21 +52,18 @@ struct ProfileView: View {
                                 .foregroundColor(.gray)
                         }
                         HStack {
-                            Text("Password")
+                            Text("Gender")
                             Spacer()
-                            Text("*******")
+                            Text("M")
                                 .foregroundColor(.gray)
                         }
                     }
-                    Button{
-    //
-                        
-                    }label: {
+                    Button(action: logOut) {
                         Text("Log Out")
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
-                            .frame(width: 352,height: 44)
+                            .frame(width: 352, height: 44)
                             .background(.black)
                             .cornerRadius(8)
                     }
@@ -78,6 +78,17 @@ struct ProfileView: View {
             .navigationBarTitle("Profile", displayMode: .inline)
         }
     }
+    private func logOut() {
+            Task {
+                do {
+                    try await AuthManager.shared.client.auth.signOut()
+                    appUser = nil
+                    dismiss()
+                } catch {
+                    print("Error logging out: \(error.localizedDescription)")
+                }
+            }
+        }
 }
 
 #Preview {

@@ -17,6 +17,9 @@ struct ADHDTabView: View {
 //            UITabBar.appearance().barTintColor = UIColor.white // Set the bar tint color (if you need)
 //            UITabBar.appearance().unselectedItemTintColor = UIColor.gray // Set the color for unselected tabs
 //        }
+    
+    
+    
     var body: some View {
         TabView{
             CombinedView()
@@ -27,9 +30,9 @@ struct ADHDTabView: View {
                 .tag(0)
                 .onAppear{selectedTab = 0}
             
-            Text("Rewards")
+            Rewards()
                 .tabItem {
-                    Image(systemName: "magnifyingglass")
+                    Image(systemName: "gift.fill")
                 }
                 .onAppear{selectedTab = 1}
                 .tag(1)

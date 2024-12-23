@@ -37,6 +37,7 @@ struct RegistrationView: View {
     
     
     var body: some View {
+        NavigationView {
         VStack{
             Spacer()
             
@@ -49,20 +50,20 @@ struct RegistrationView: View {
                 TextField("Enter your email: ",text: $email)
                     .autocapitalization(.none)
                     .modifier(ADHDTextFieldModifiers())
-
+                
                 
                 SecureField("Enter your password: ",text: $password)
                     .modifier(ADHDTextFieldModifiers())
-
                 
-//                TextField("Enter your fullname: ",text:$fullname)
-//                    .modifier(ADHDTextFieldModifiers())
-//
-//
-//                TextField("Enter your username: ",text:$username)
-//                    .modifier(ADHDTextFieldModifiers())
-//                    .autocapitalization(.none)
-
+                
+                //                TextField("Enter your fullname: ",text:$fullname)
+                //                    .modifier(ADHDTextFieldModifiers())
+                //
+                //
+                //                TextField("Enter your username: ",text:$username)
+                //                    .modifier(ADHDTextFieldModifiers())
+                //                    .autocapitalization(.none)
+                
             }
             
             
@@ -70,20 +71,7 @@ struct RegistrationView: View {
             
             
             
-//            Button {
-//                action: do {
-//                    Task {
-//                        do {
-//                            let appUser = try await viewModel.registerNewUserWithEmail(email: email, password: password)
-//                            self.appUser = appUser
-//                            dismiss()
-//                        }
-//                        catch {
-//                            print("issue with registration")
-//                        }
-//                    }
-//                }
-//            }
+            //
             
             
             
@@ -134,6 +122,9 @@ struct RegistrationView: View {
             .padding(.vertical,16)
             
         }
+        .navigationTitle("Registration") // Add the navigation title here
+        .navigationBarTitleDisplayMode(.inline)
+    }
     }
 }
 

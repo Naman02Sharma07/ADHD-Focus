@@ -3,15 +3,15 @@ import SwiftUI
 struct CombinedView: View {
     
     @State private var currentTomatoIndex: Int = 0
-
+    @State private var isInBreak: Bool = false // Track whether we're in a break
     @State private var sessionsCompleted: Int = 0
     @State private var totalTomatoesSelected: Int = 0
     
     
     @StateObject private var viewModel = PomodoroViewModel()
     
-    @AppStorage("loggedInEmail") private var loggedInEmail: String = "" // Store logged-in user's email
-    @State private var selectedTask: Tasks? = nil // Track the selected task
+    @AppStorage("loggedInEmail") private var loggedInEmail: String = ""
+    @State private var selectedTask: Tasks? = nil
     @State private var tomatoCounts: [Int] = [0, 0, 0, 0] // Counts for each tomato icon
     @State private var tasks: [Tasks] = []
     @State private var newTaskTitle: String = ""
@@ -39,53 +39,10 @@ struct CombinedView: View {
                             .fontWeight(.bold)
                     }
                 }
-                //                HStack(spacing: 25) {
-                //                    Image("tomato") // Replace with your asset names
-                //                        .resizable()
-                //                        .scaledToFit()
-                //                        .frame(width: 30, height: 30) // Adjust size as needed
-                //
-                //                    Image("tomato")
-                //                        .resizable()
-                //                        .scaledToFit()
-                //                        .frame(width: 30, height: 30)
-                //
-                //                    Image("tomato")
-                //                        .resizable()
-                //                        .scaledToFit()
-                //                        .frame(width: 30, height: 30)
-                //
-                //                    Image("tomato-3")
-                //                        .resizable()
-                //                        .scaledToFit()
-                //                        .frame(width: 30, height: 30)
-                //                }
+                
                 
                 HStack(spacing: 25) {
-//                    ForEach(0..<4) { index in
-//                        Button(action: {
-//                            if selectedTask != nil && currentTomatoIndex < 4 {
-//                                tomatoCounts[index] += 1
-//                                currentTomatoIndex += 1
-//                            }
-//                        
-//                        
-////                        Button(action: {
-////                            // Increment the count for the selected tomato
-////                            if selectedTask != nil {
-////                                tomatoCounts[index] += 1
-////                            }
-//                        
-//                        
-//                        }) {
-//                            Image(tomatoCounts[index] > 0 ? "tomato" : "tomato-3")
-//                                .resizable()
-//                                .scaledToFit()
-//                                .frame(width: 30, height: 30)
-//                        }
-//                    }
-                    
-                    
+
                     
                     ForEach(0..<4) { index in
                         Button(action: {
@@ -124,14 +81,20 @@ struct CombinedView: View {
                         .clipShape(Capsule())
                     }
                     
-//                    Button(action: {
-//                        self.viewModel.isTimeStarted.toggle()
-//                    }) {
+//
+                    
+                    
+                    
+                    
                     
                     Button(action: {
                         viewModel.isTimeStarted.toggle()
                         if viewModel.isTimeStarted {
-                            viewModel.startPomodoroSession(tomatoCount: currentTomatoIndex)
+                            if isInBreak { // **Check if currently in a break**
+                                viewModel.timeDuration = 900 // **Set duration for break (5 minutes)**
+                            } else {
+                                viewModel.startPomodoroSession(tomatoCount: totalTomatoesSelected) // **Start Pomodoro session**
+                            }
                         }
                     }) {
                         HStack(spacing: 15) {
@@ -146,6 +109,11 @@ struct CombinedView: View {
                 }
                 .padding(.top, 55)
             }
+            
+            
+            
+            
+            
             
             .onReceive(self.time) { _ in
                 if self.viewModel.isTimeStarted {
@@ -163,23 +131,29 @@ struct CombinedView: View {
                         }
                     } else {
                         // Timer has finished for one session
-                        if sessionsCompleted < totalTomatoesSelected {
-                            // Reset the tomato icon back to default in reverse order
-                            tomatoCounts[totalTomatoesSelected - 1 - sessionsCompleted] = 0 // Change the completed tomato to its default icon
-                            sessionsCompleted += 1 // Increment completed sessions count
-
-                            // Reset the timer for the next session
-                            viewModel.timeDuration = 15 // Reset to the session duration (15 seconds in this case)
-                        }
-                        
-                        // Stop the timer if all sessions are completed
-                        if sessionsCompleted >= totalTomatoesSelected {
-                            viewModel.isTimeStarted = false
+                        if !isInBreak {
+                            if sessionsCompleted < totalTomatoesSelected {
+                                // Reset the tomato icon back to default in reverse order
+                                tomatoCounts[totalTomatoesSelected - 1 - sessionsCompleted] = 0 // Change the completed tomato to its default icon
+                                sessionsCompleted += 1 // Increment completed sessions count
+                                
+                                // Start a break after the session completes
+                                isInBreak = true
+                                viewModel.timeDuration = 900 // Set break duration to 5 minutes (300 seconds)
+                            }
+                            
+                            // Stop the timer if all sessions are completed
+                            if sessionsCompleted >= totalTomatoesSelected {
+                                viewModel.isTimeStarted = false
+                            }
+                        } else {
+                            
+                            isInBreak = false
+                            viewModel.timeDuration = 1500;
                         }
                     }
                 }
             }
-               
             
             .padding()
             
@@ -205,18 +179,7 @@ struct CombinedView: View {
                 
                 
                 
-                // Use List for better swipe actions
-                //                List {
-                //                    ForEach(tasks) { task in
-                //                        TaskRow(task: task, selectedTask: $selectedTask)
-                //                    }
                 
-                
-                
-                //                List {
-                //                    ForEach(tasks) { task in
-                //                    TaskRow(task: task, selectedTask: $selectedTask, tomatoCounts: $tomatoCounts)
-                //                    }
                 
                 
                 
@@ -224,12 +187,7 @@ struct CombinedView: View {
                     ForEach(tasks) { task in
                         TaskRow(task: task, selectedTask: $selectedTask, tomatoCounts: $tomatoCounts)
                         
-                        
-                        //                            .onTapGesture {
-                        //                                // When a new task is selected, reset the tomato counts
-                        //                                selectedTask = task
-                        //                                resetTomatoCounts()
-                        //                            }
+                    
                             .onTapGesture {
                                 selectedTask = task
                                 resetTomatoCounts()
@@ -254,8 +212,8 @@ struct CombinedView: View {
         }
         
         .padding(.top,80)
-        .background(Color.white) // Set the background of the entire view to white
-        .edgesIgnoringSafeArea(.all) // Ignore safe area to cover the entire screen
+        .background(Color.white)
+        .edgesIgnoringSafeArea(.all)
     }
 
     // MARK: - Methods
@@ -264,19 +222,19 @@ struct CombinedView: View {
         guard !newTaskTitle.isEmpty else { return }
         let newTask = Tasks(title: newTaskTitle)
         tasks.append(newTask)
-        saveTasks()  // Save the task after adding
-        newTaskTitle = ""  // Clear the text field
+        saveTasks()
+        newTaskTitle = ""  
     }
 
     private func deleteTask(at offsets: IndexSet) {
-        // Remove the task from the array using the provided index set
+        
         tasks.remove(atOffsets: offsets)
         saveTasks()  // Save the updated list after deletion
     }
 
     private func loadTasks() {
         guard !loggedInEmail.isEmpty else { return }
-        let userKey = "tasks_\(loggedInEmail)"  // Use email as a unique key for each user's tasks
+        let userKey = "tasks_\(loggedInEmail)"
         if let loadedTasks = try? JSONDecoder().decode([Tasks].self, from: UserDefaults.standard.data(forKey: userKey) ?? Data()) {
             tasks = loadedTasks
         }
@@ -290,11 +248,6 @@ struct CombinedView: View {
         }
     }
 
-//    func formatTime() -> String {
-//        let minutes = Int(viewModel.timeDuration) / 60 % 60
-//        let seconds = Int(viewModel.timeDuration) % 60
-//        return String(format: "%02i:%02i", minutes, seconds)
-//    }
     
     
     private func formatTime() -> String {
@@ -303,10 +256,7 @@ struct CombinedView: View {
         return String(format: "%02i:%02i", minutes, seconds)
     }
     
-//    private func resetTomatoCounts() {
-//            tomatoCounts = [0, 0, 0, 0] // Reset all counts to zero
-//        }
-    
+
     private func resetTomatoCounts() {
         tomatoCounts = [0, 0, 0, 0]
         currentTomatoIndex = 0

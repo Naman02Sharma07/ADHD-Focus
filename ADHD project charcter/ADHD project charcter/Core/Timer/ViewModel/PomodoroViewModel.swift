@@ -37,7 +37,7 @@ class PomodoroViewModel: ObservableObject {
     
     func startPomodoroSession(tomatoCount: Int) {
         guard tomatoCount > 0 else { return }
-        currentSessionDuration = 15 // Duration for each tomato in seconds
+        currentSessionDuration = 1500 // Duration for each tomato in seconds
         timeDuration = currentSessionDuration;
         isTimeStarted = true
     }
